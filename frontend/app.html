@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autos Colombia - Dashboard</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="favicon_io/favicon.ico">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Arial Black', Arial, sans-serif;
+            background-color: #ffffff;
+            color: #2e3f5c;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 210px;
+            height: 100vh;
+            background-color: #2e3f5c;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            flex-shrink: 0;
+        }
+        .sidebar .title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin: 10px 20px 30px 20px;
+            line-height: 1.2;
+        }
+        .sidebar .label {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            margin: 0 20px 10px 20px;
+        }
+        .sidebar .menu-item {
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            padding: 15px 20px;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        .sidebar .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar .spacer {
+            flex: 1;
+        }
+
+        /* Main Area */
+        .main-area {
+            flex: 1;
+            padding: 0;
+            overflow-y: auto;
+        }
+        .seccion {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        #dashboard.seccion {
+            justify-content: center;
+            align-items: center;
+        }
+        h2.titulo-seccion {
+            color: #2e3f5c;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        /* Forms */
+        .form-container {
+            max-width: 750px;
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-container label {
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        .input-group {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .form-container input[type="text"] {
+            flex: 1;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 20px;
+            font-family: inherit;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            outline: none;
+            color: #2e3f5c;
+        }
+        .form-container textarea {
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            outline: none;
+            color: #2e3f5c;
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background-color: #4472a8;
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 30px;
+            font-family: inherit;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background-color 0.2s;
+            align-self: center;
+            width: 60%;
+        }
+        .btn-primary:hover {
+            background-color: #5583b9;
+        }
+        .btn-icon {
+            background-color: #4472a8;
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            width: 55px;
+            height: 55px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        .btn-icon:hover {
+            background-color: #5583b9;
+        }
+
+        /* Messages */
+        .msg {
+            display: none;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .msg-error {
+            background-color: #c07070;
+            color: #ffffff;
+        }
+        .msg-ok {
+            background-color: #a8d5a2;
+            color: #2e3f5c;
+        }
+
+        /* Dashboard Cards */
+        .cards-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .card {
+            background-color: #2e3f5c;
+            color: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 160px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .subtitulo {
+            color: gray;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 15px;
+        }
+        th {
+            background-color: #8fafd4;
+            color: #2e3f5c;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+        tr:nth-child(odd) {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="title">AUTOS<br>COLOMBIA</div>
+        <div class="label">GESTIONAR:</div>
+        <div class="menu-item" onclick="mostrarSeccion('dashboard')">DASHBOARD</div>
+        <div class="menu-item" onclick="mostrarSeccion('entrada')">ENTRADA VEHÍCULOS</div>
+        <div class="menu-item" onclick="mostrarSeccion('salida')">SALIDA VEHÍCULOS</div>
+        <div class="menu-item" onclick="mostrarSeccion('novedad')">NOVEDADES VEHÍCULOS</div>
+        <div class="menu-item" onclick="mostrarSeccion('historial')">HISTORIAL VEHÍCULO</div>
+        
+        <div class="spacer"></div>
+        <a href="login.html" class="menu-item" style="margin-bottom: 2rem;">SALIR</a>
+    </div>
+
+    <div class="main-area">
+        
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="seccion">
+            <h2 class="titulo-seccion">VEHÍCULOS EN EL PARQUEADERO:</h2>
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-title">TOTAL CELDAS</div>
+                    <div class="card-value">50</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">OCUPADAS</div>
+                    <div class="card-value" id="dash-ocupadas">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">DISPONIBLES</div>
+                    <div class="card-value" id="dash-disponibles">50</div>
+                </div>
+            </div>
+            
+            <div class="subtitulo">VEHÍCULOS ACTUALES:</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>PLACA</th>
+                        <th>HORA DE ENTRADA</th>
+                        <th>NOVEDAD</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-dashboard">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ENTRADA -->
+        <div id="entrada" class="seccion">
+            <div class="form-container">
+                <h2 class="titulo-seccion">ENTRADA VEHÍCULOS</h2>
+                <label>PLACA</label>
+                <input type="text" id="placa-entrada" maxlength="6" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+                <button class="btn-primary" onclick="registrarEntrada()">REGISTRAR</button>
+                <div id="error-entrada" class="msg msg-error"></div>
+                <div id="ok-entrada" class="msg msg-ok"></div>
+            </div>
+        </div>
+
+        <!-- SALIDA -->
+        <div id="salida" class="seccion">
+            <div class="form-container">
+                <h2 class="titulo-seccion">SALIDA VEHÍCULOS</h2>
+                <label>PLACA</label>
+                <input type="text" id="placa-salida" maxlength="6" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+                <button class="btn-primary" onclick="registrarSalida()">LIBERAR</button>
+                <div id="error-salida" class="msg msg-error"></div>
+                <div id="ok-salida" class="msg msg-ok"></div>
+            </div>
+        </div>
+
+        <!-- NOVEDADES -->
+        <div id="novedad" class="seccion">
+            <div class="form-container">
+                <h2 class="titulo-seccion">NOVEDADES VEHÍCULOS</h2>
+                <label>PLACA</label>
+                <div class="input-group">
+                    <input type="text" id="placa-novedad" maxlength="6" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+                    <button class="btn-icon" onclick="buscarParaNovedad()">🔍</button>
+                </div>
+                
+                <label>DESCRIPCION</label>
+                <textarea id="desc-novedad" rows="4" disabled></textarea>
+                
+                <button class="btn-primary" id="btn-registrar-novedad" onclick="registrarNovedad()" disabled>REGISTRAR</button>
+                
+                <div id="error-novedad" class="msg msg-error"></div>
+                <div id="ok-novedad" class="msg msg-ok"></div>
+            </div>
+        </div>
+
+        <!-- HISTORIAL -->
+        <div id="historial" class="seccion">
+            <div class="form-container">
+                <h2 class="titulo-seccion">CONSULTAR HISTORIAL</h2>
+                <label>PLACA</label>
+                <div class="input-group">
+                    <input type="text" id="placa-historial" maxlength="6" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+                    <button class="btn-icon" onclick="buscarHistorial()">🔍</button>
+                </div>
+                
+                <div style="width: 100%; overflow-x: auto;">
+                    <table style="margin-top: 20px;">
+                        <thead>
+                            <tr>
+                                <th>F. ENTRADA</th>
+                                <th>F. SALIDA</th>
+                                <th>DURACIÓN</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-historial">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Javascript -->
+    <script>
+        const API = "http://localhost:8000";
+
+        async function apiCall(method, path, body = null) {
+            const opts = { method, headers: { "Content-Type": "application/json" } };
+            if (body) opts.body = JSON.stringify(body);
+            try {
+                const res = await fetch(API + path, opts);
+                const data = await res.json();
+                return { ok: res.ok, data };
+            } catch (err) {
+                return { ok: false, data: { detail: "Error de conexión con el servidor." } };
+            }
+        }
+
+        function ocultarMensajes(sec) {
+            ['error', 'ok'].forEach(t => {
+                const el = document.getElementById(`${t}-${sec}`);
+                if (el) el.style.display = 'none';
+            });
+        }
+
+        function mostrarError(sec, msg) {
+            const el = document.getElementById(`error-${sec}`);
+            if (el) {
+                el.textContent = msg; 
+                el.style.display = 'block';
+            }
+        }
+
+        function mostrarOk(sec, msg) {
+            const el = document.getElementById(`ok-${sec}`);
+            if (el) {
+                el.textContent = msg; 
+                el.style.display = 'block';
+            }
+        }
+
+        function limpiarInput(id) {
+            const target = document.getElementById(id);
+            if (target) target.value = '';
+        }
+
+        function mostrarSeccion(id) {
+            document.querySelectorAll('.seccion').forEach(s => s.style.display = 'none');
+            const target = document.getElementById(id);
+            if(target) target.style.display = 'flex';
+            
+            if (id === 'dashboard') {
+                cargarDashboard();
+            }
+        }
+
+        // INIT
+        window.onload = () => { 
+            mostrarSeccion('dashboard'); 
+        };
+
+        // --- DASHBOARD ---
+        async function cargarDashboard() {
+            const tbody = document.getElementById('tabla-dashboard');
+            tbody.innerHTML = '';
+            
+            const resActivos = await apiCall('GET', '/registro/activos');
+            if (!resActivos.ok) return;
+            const activos = resActivos.data;
+
+            const resNovedades = await apiCall('GET', '/novedad/activos');
+            const novedades = resNovedades.ok ? resNovedades.data : [];
+
+            document.getElementById('dash-ocupadas').textContent = activos.length;
+            document.getElementById('dash-disponibles').textContent = 50 - activos.length;
+
+            activos.forEach(reg => {
+                const nov = novedades.find(n => n.id_registro === reg.id_registro);
+                let desc = "N/A";
+                if (nov) {
+                    desc = nov.descripcion.length > 30 ? nov.descripcion.substring(0, 30) + '...' : nov.descripcion;
+                }
+
+                const fechaIn = new Date(reg.fecha_entrada).toLocaleString('es-CO', {dateStyle:'short', timeStyle:'short'});
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${reg.placa_vehiculo}</td>
+                    <td>${fechaIn}</td>
+                    <td>${desc}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- ENTRADA ---
+        async function registrarEntrada() {
+            const placa = document.getElementById("placa-entrada").value.trim();
+            ocultarMensajes('entrada');
+            if (placa.length !== 6) {
+                mostrarError('entrada', "La placa debe tener exactamente 6 caracteres.");
+                return;
+            }
+            // 1. Asegurar vehículo
+            await apiCall('POST', '/vehiculo', { placa, marca: 'Desconocido', modelo: 'Desconocido' });
+            // 2. Registrar entrada
+            const { ok, data } = await apiCall('POST', '/registro/entrada', { placa_vehiculo: placa });
+            if (!ok) mostrarError('entrada', data.detail);
+            else { 
+                mostrarOk('entrada', `Entrada registrada para ${placa}.`); 
+                limpiarInput('placa-entrada'); 
+            }
+        }
+
+        // --- SALIDA ---
+        async function registrarSalida() {
+            const placa = document.getElementById("placa-salida").value.trim();
+            ocultarMensajes('salida');
+            if (placa.length !== 6) {
+                mostrarError('salida', "La placa debe tener exactamente 6 caracteres.");
+                return;
+            }
+            const { ok, data } = await apiCall('POST', '/registro/salida', { placa_vehiculo: placa });
+            if (!ok) mostrarError('salida', data.detail);
+            else { 
+                mostrarOk('salida', `Salida registrada para ${placa}.`); 
+                limpiarInput('placa-salida'); 
+            }
+        }
+
+        // --- NOVEDADES ---
+        async function buscarParaNovedad() {
+            const placa = document.getElementById("placa-novedad").value.trim();
+            ocultarMensajes('novedad');
+            const txt = document.getElementById("desc-novedad");
+            const btn = document.getElementById("btn-registrar-novedad");
+            
+            txt.disabled = true;
+            btn.disabled = true;
+            txt.value = '';
+
+            if (placa.length !== 6) {
+                mostrarError('novedad', 'La placa debe tener 6 caracteres.');
+                return;
+            }
+
+            const { ok, data } = await apiCall('GET', '/vehiculo/' + placa);
+            if (!ok) {
+                mostrarError('novedad', 'La placa ingresada no existe en el sistema.');
+            } else {
+                txt.disabled = false;
+                btn.disabled = false;
+                txt.focus();
+            }
+        }
+
+        async function registrarNovedad() {
+            const placa = document.getElementById("placa-novedad").value.trim();
+            const desc = document.getElementById("desc-novedad").value.trim();
+            ocultarMensajes('novedad');
+            if (!desc) {
+                mostrarError('novedad', 'La descripción no puede estar vacía.');
+                return;
+            }
+            const { ok, data } = await apiCall('POST', '/novedad', { placa_vehiculo: placa, descripcion: desc });
+            if (!ok) mostrarError('novedad', data.detail);
+            else { 
+                mostrarOk('novedad', 'Novedad registrada correctamente.'); 
+                document.getElementById("desc-novedad").value = ''; 
+                document.getElementById("desc-novedad").disabled = true;
+                document.getElementById("btn-registrar-novedad").disabled = true;
+                limpiarInput('placa-novedad');
+            }
+        }
+
+        // --- HISTORIAL ---
+        function calcularDuracion(entrada, salida) {
+            const diff = Math.floor((new Date(salida) - new Date(entrada)) / 60000);
+            return `${Math.floor(diff/60)}h ${String(diff%60).padStart(2,'0')}mn`;
+        }
+
+        async function buscarHistorial() {
+            const placa = document.getElementById("placa-historial").value.trim();
+            const tbody = document.getElementById("tabla-historial");
+            tbody.innerHTML = '';
+            
+            if (placa.length !== 6) return;
+
+            const { ok, data } = await apiCall('GET', '/registro/historial/' + placa);
+            if (!ok) return;
+
+            if (data.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="3" style="text-align:center;">No se encontraron registros para esta placa.</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+
+            data.forEach(row => {
+                const fEntrada = new Date(row.fecha_entrada).toLocaleString('es-CO');
+                const fSalida = new Date(row.fecha_salida).toLocaleString('es-CO');
+                const pDuracion = calcularDuracion(row.fecha_entrada, row.fecha_salida);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${fEntrada}</td>
+                    <td>${fSalida}</td>
+                    <td>${pDuracion}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
