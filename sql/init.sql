@@ -11,9 +11,6 @@ CREATE DATABASE "Autos_Colombia"
     CONNECTION LIMIT = -1
     IS_TEMPLATE = False;
 
--- NOTE: The instructions imply that the tables should be created inside the Autos_Colombia database.
-\c "Autos_Colombia"
-
 CREATE TABLE IF NOT EXISTS vehiculo (
     placa   VARCHAR(6)  PRIMARY KEY,
     marca   VARCHAR(12) NOT NULL,
