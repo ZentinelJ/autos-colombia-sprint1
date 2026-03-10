@@ -39,6 +39,33 @@ autos_colombia/
 - PostgreSQL 15+
 - pip: `fastapi`, `uvicorn`, `psycopg2-binary`, `pydantic`
 
+## Ejecutar en Windows
+
+El proyecto está optimizado para Linux. En Windows puede presentarse un error
+de codificación (`UnicodeDecodeError`) causado por psycopg2 al leer archivos
+de configuración de PostgreSQL que contienen caracteres especiales en Latin-1.
+
+### Solución requerida — Activar UTF-8 a nivel de sistema
+
+1. Panel de Control → **Región** → pestaña **Administrativo**
+2. Clic en **Cambiar configuración regional del sistema**
+3. Marcar ✅ **"Beta: usar Unicode UTF-8 para compatibilidad con idiomas en todo el mundo"**
+4. Reiniciar Windows
+
+Este cambio es necesario una sola vez. Sin él, psycopg2 falla antes de
+establecer la conexión con la base de datos independientemente de cualquier
+configuración en el código.
+
+### Arrancar el backend en Windows
+
+Desde CMD:
+```cmd
+cd C:\ruta\al\proyecto\backend
+python -m uvicorn main:app --reload
+```
+
+> **Importante:** evitar rutas con caracteres especiales como guiones largos (`–`).
+
 ## Paso 1 — Crear y poblar la base de datos
 
 ```bash
@@ -49,6 +76,17 @@ psql -U postgres -f sql/init.sql
 psql -U postgres -d "Autos_Colombia" -f sql/init.sql
 ```
 
+### Poblar la base de datos en Windows
+
+Abrir **pgAdmin** → conectarse al servidor local → crear la base de datos:
+1. Clic derecho en **Databases** → **Create** → **Database**
+2. Name: `Autos_Colombia`, Owner: `postgres` → Guardar
+3. Clic derecho sobre `Autos_Colombia` → **Query Tool**
+4. Abrir el archivo `sql/init.sql` → ejecutar con **F5**
+
+O desde CMD usando psql:
+```cmd
+psql -U postgres -f sql\init.sql
 ## Paso 2 — Instalar dependencias Python
 
 ```bash
